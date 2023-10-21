@@ -94,6 +94,9 @@ data HaddockArgs = HaddockArgs
   -- ^ Path to the interface file, relative to argOutputDir, required.
   , argPackageName :: Flag PackageIdentifier
   -- ^ Package name, required.
+  , argLibraryName :: Flag LibraryName
+  -- ^ Optional library name used to construct haddock's `--package-name`
+  -- option for for sublibraries.
   , argHideModules :: (All, [ModuleName.ModuleName])
   -- ^ (Hide modules ?, modules to hide)
   , argIgnoreExports :: Any
@@ -606,6 +609,7 @@ fromLibrary verbosity tmp lbi clbi htmlTemplate haddockVersion lib = do
   return
     args
       { argHideModules = (mempty, otherModules (libBuildInfo lib))
+      , argLibraryName = toFlag (libName lib)
       }
 
 fromExecutable
@@ -863,7 +867,11 @@ renderPureArgs version comp platform args =
           maybe
             []
             ( \pkg ->
-                [ "--package-name=" ++ prettyShow (pkgName pkg)
+                [ "--package-name=" ++
+                    case argLibraryName args of
+                      Flag (LSubLibName libName) ->
+                           prettyShow (pkgName pkg) ++ ":" ++ unUnqualComponentName libName
+                      _ -> prettyShow (pkgName pkg)
                 , "--package-version=" ++ prettyShow (pkgVersion pkg)
                 ]
             )
