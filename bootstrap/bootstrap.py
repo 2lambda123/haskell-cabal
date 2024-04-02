@@ -300,7 +300,7 @@ def archive_name(cabalversion):
 def make_distribution_archive(cabal_path):
     import tempfile
 
-    print(f'Creating distribution tarball')
+    print('Creating distribution tarball')
 
     # Get bootstrapped cabal version
     # This also acts as smoke test
@@ -459,7 +459,7 @@ def main() -> None:
                   {dist_archive}
                 '''))
 
-        print(dedent(f'''
+        print(dedent('''
             You now should use this to build a full cabal-install distribution
             using 'cabal build'.
             '''))
