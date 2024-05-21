@@ -19,7 +19,7 @@ docutils==0.18.1
     #   sphinx
     #   sphinx-jsonschema
     #   sphinx-rtd-theme
-idna==3.4
+idna==3.7
     # via requests
 imagesize==1.4.1
     # via sphinx
@@ -39,7 +39,7 @@ pygments==2.15.1
     #   sphinx
 pyyaml==6.0
     # via sphinx-jsonschema
-requests==2.31.0
+requests==2.32.0
     # via
     #   sphinx
     #   sphinx-jsonschema
