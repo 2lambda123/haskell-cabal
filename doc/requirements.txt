@@ -39,7 +39,7 @@ pygments==2.15.1
     #   sphinx
 pyyaml==6.0
     # via sphinx-jsonschema
-requests==2.32.2
+requests==2.32.3
     # via
     #   sphinx
     #   sphinx-jsonschema
