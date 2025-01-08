@@ -1,3 +1,4 @@
+
 pull_request_rules:
 
   # implementing PR delay logic: apply a label after 2 days of inactivity
@@ -10,42 +11,12 @@ pull_request_rules:
     conditions:
       - updated-at<2 days ago
       - or:
-        - label=merge me
-        - label=squash+merge me
-        - label=merge+no rebase
+          - label=merge me
+          - label=squash+merge me
+          - label=merge+no rebase
       - '#approved-reviews-by>=2'
 
   # rebase+merge strategy
-  - actions:
-      queue:
-        name: default
-        # Merge into master with a merge commit
-        method: merge
-        # Update the pr branch with rebase, so the history is clean
-        update_method: rebase
-    name: Put pull requests in the rebase+merge queue
-    conditions:
-      - base=master
-      - label=merge me
-      - label=merge delay passed
-      - '#approved-reviews-by>=2'
-
-  # merge+squash strategy
-  - actions:
-      queue:
-        name: default
-        method: squash
-        # both update methods get absorbed by the squash, so we use the most
-        # reliable
-        update_method: merge
-    name: Put pull requests in the squash+merge queue
-    conditions:
-      - base=master
-      - label=squash+merge me
-      - label=merge delay passed
-      - '#approved-reviews-by>=2'
-
-  # merge+no rebase strategy
   - actions:
       merge:
         method: merge
@@ -58,21 +29,6 @@ pull_request_rules:
 
   # rebase+merge strategy for backports: require 1 approver instead of 2
   - actions:
-      queue:
-        name: default
-        # Merge with a merge commit
-        method: merge
-        # Update the pr branch with rebase, so the history is clean
-        update_method: rebase
-    name: Put backports in the rebase+merge queue
-    conditions:
-      - label=merge me
-      - base!=master
-      - body~=backport
-      - '#approved-reviews-by>=1'
-
-  # backports should be labeled as such
-  - actions:
       label:
         add:
           - backport
@@ -80,6 +36,41 @@ pull_request_rules:
     conditions:
       - body~=automatic backport
 
+  - name: Put backports in the rebase+merge queue + Put pull requests in the rebase+merge
+      queue + Put pull requests in the squash+merge queue
+    conditions: []
+    actions:
+      queue:
 queue_rules:
+  - name: duplicated default from Put pull requests in the rebase+merge queue
+    queue_conditions:
+      - base=master
+      - label=merge me
+      - label=merge delay passed
+      - '#approved-reviews-by>=2'
+    merge_conditions: []
+    update_bot_account: Mikolaj
+    update_method: rebase
+    merge_method: merge
+  - name: duplicated default from Put pull requests in the squash+merge queue
+    queue_conditions:
+      - base=master
+      - label=squash+merge me
+      - label=merge delay passed
+      - '#approved-reviews-by>=2'
+    merge_conditions: []
+    update_bot_account: Mikolaj
+    update_method: merge
+    merge_method: squash
+  - name: duplicated default from Put backports in the rebase+merge queue
+    queue_conditions:
+      - label=merge me
+      - base!=master
+      - body~=backport
+      - '#approved-reviews-by>=1'
+    merge_conditions: []
+    update_bot_account: Mikolaj
+    update_method: rebase
+    merge_method: merge
   - name: default
     update_bot_account: Mikolaj
