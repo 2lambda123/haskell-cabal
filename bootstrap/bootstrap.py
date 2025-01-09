@@ -6,6 +6,7 @@ bootstrap.py - bootstrapping utility for cabal-install.
 
 See bootstrap/README.md for usage instructions.
 """
+from security import safe_command
 
 USAGE = """
 This utility is only intended for use in building cabal-install
@@ -473,7 +474,7 @@ def subprocess_run(args, **kwargs):
         extras += f' cwd={kwargs["cwd"]}'
     print(f'bootstrap: running{extras} {args_str}')
 
-    return subprocess.run(args, **kwargs)
+    return safe_command.run(subprocess.run, args, **kwargs)
 
 if __name__ == '__main__':
     main()
